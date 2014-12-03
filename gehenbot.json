@@ -1,0 +1,8 @@
+{
+		"cmdchar": "!",
+		"nick": "GehenBot",
+		"user": "GehenBot",
+		"servers": {
+				"irc.freenode.net:6667": ["#fuzztest", "#disrupted"]
+		}
+}
