@@ -1,8 +1,21 @@
 {
-		"cmdchar": "!",
-		"nick": "GehenBot",
-		"user": "GehenBot",
-		"servers": {
-				"irc.freenode.net:6667": ["#fuzztest", "#disrupted"]
-		}
+		"command_char": "!",
+		"command_dir": "/home/mike/dev/gehenbot/commands/",
+		"plugin_dir": "/home/mike/dev/gehenbot/plugins/",
+		"bots": [
+				{
+						"nick": "GehenBoto",
+						"user": "GehenBoto",
+						"server": "irc.freenode.net:6667",
+						"channels": ["#fuzztest"],
+						"scripts": ["greet.lua"]
+				},
+				{
+						"nick": "GehenBoto",
+						"user": "GehenBot",
+						"server": "irc.prison.net:6667",
+						"channels": ["#fuzztest"],
+						"scripts": ["greet.lua"]
+				}
+		]
 }
