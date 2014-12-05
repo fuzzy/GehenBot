@@ -1,25 +1,32 @@
 package main
 
 import (
-	"os"
-	"log"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 )
 
 type Config struct {
-	CmdChar  string
-	Nick     string
-	User     string
-	Servers  map[string][]string
+	CommandChar string `json:"command_char"`
+	CommandDir  string `json:"command_dir"`
+	PluginDir   string `json:"plugin_dir"`
+	Bots        []struct {
+		Channels []string `json:"channels"`
+		Nick     string   `json:"nick"`
+		Scripts  []string `json:"scripts"`
+		Server   string   `json:"server"`
+		User     string   `json:"user"`
+	} `json:"bots"`
 }
 
-func ReadConfig(jsonCfg string) Config {
-	cfgFile, _ := os.Open(jsonCfg)
-	decoder    := json.NewDecoder(cfgFile)
-	cfgData    := Config{}
-	err        := decoder.Decode(&cfgData)
-	
-	if err != nil { log.Fatalf("Error in ReadConfig(): %s\n", err) }
+func ReadConfig(jsonCfg string) {
+	cfgData, err := ioutil.ReadFile(jsonCfg)
+	if err != nil {
+		log.Fatalf("Error in io.ReadFile(): %s\n", err)
+	}
 
-	return cfgData
+	err = json.Unmarshal([]byte(cfgData), &cfg)
+	if err != nil {
+		log.Fatalf("Error in ReadConfig(): %s\n", err)
+	}
 }
