@@ -8,8 +8,8 @@ import (
 
 // globals that make me ill, move to configs asap
 var (
-	bots           []BotInstance
-	cfg            Config
+	bots         []BotInstance
+	cfg          Config
 	GehenVersion = "0.2.0"
 	daemon       = false
 	verbose      = false
@@ -30,31 +30,29 @@ func main() {
 	}
 
 	// get our config data
-	cfg            = ReadConfig("./gehenbot.json")
+	ReadConfig("./gehenbot.json")
 
 	// print our little banner
 	fmt.Printf("\nGehenBot v%s by Mike 'Fuzzy' Partin <fuzzy@fumanchu.org>\n\n", GehenVersion)
-	
-	// set our config data
-	for k, v := range cfg.Servers {
-		bot         := BotInstance{}
-		bot.address  = k
-		bot.channels = v
-		bot.nick     = cfg.Nick
-		if cfg.User == "" { 
-			bot.name   = cfg.Nick
-		} else {
-			bot.name   = cfg.User
-		}
 
+	// set our config data
+	for _, b := range cfg.Bots {
+		bot := BotInstance{}
+		bot.address = b.Server
+		bot.channels = b.Channels
+		bot.nick = b.Nick
+		if b.User == "" {
+			bot.name = b.Nick
+		} else {
+			bot.name = b.User
+		}
 		// fire off the connection and event handlers
 		go bot.Connect()
-		
 		// and push it onto the stack
-		bots         = append(bots, bot)
+		bots = append(bots, bot)
 	}
 
-	for { 
+	for {
 		for _, b := range bots {
 			if b.Connected() {
 				time.Sleep(100000)
