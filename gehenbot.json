@@ -1,4 +1,7 @@
 {
+		"daemonize": false,
+		"verbose": false,
+		"debug": false,
 		"command_char": "!",
 		"command_dir": "/home/mike/dev/gehenbot/commands/",
 		"plugin_dir": "/home/mike/dev/gehenbot/plugins/",
