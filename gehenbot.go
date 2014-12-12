@@ -28,6 +28,7 @@ package main
 
 import (
 	// stdlib
+	"fmt"
 	"log"
 	"time"
 )
@@ -40,13 +41,13 @@ var (
 
 func Log(line string) {
 	if cfg.Verbose {
-		log.Println(line)
+		log.Println(fmt.Sprintf("INFO: %s", line))
 	}
 }
 
 func Debug(line string) {
 	if cfg.Debug {
-		log.Println(line)
+		log.Println(fmt.Sprintf("DEBUG: %s", line))
 	}
 }
 
