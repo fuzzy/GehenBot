@@ -28,32 +28,17 @@ package main
 
 import (
 	// stdlib
-	"fmt"
-	// "strings"
+	// "fmt"
 	// 3rd party
-	"github.com/thoj/go-ircevent"
+	"github.com/aarzilli/golua/lua"
 )
 
-/**************************
-** Event setter / getter **
-**************************/
+func (b *BotInstance) registerHandler(L *lua.State) int {
+	ev := L.ToString(1)
+	cb := L.ToString(2)
+	handler := Handler{event: ev, callback: cb}
 
-func (b BotInstance) EventHandler(e *irc.Event) {
-	/*
-		Debug(e.Nick)
-		Debug(e.Message())
-		Debug(strings.Join(e.Arguments, " "))
-		Debug(e.Code)
-		Debug(e.Raw)
-		Debug("---------------------------------")
-		Debug(fmt.Sprintf("%d", len(b.handlers)))
-	*/
+	b.handlers = append(b.handlers, handler)
 
-	for _, h := range b.handlers {
-		if h.event == e.Code {
-			b.lua.DoString(fmt.Sprintf("print('Lua: %s(%s, %s, %s, %s)')", h.callback, e.Nick, e.Code, e.Arguments[0], e.Message()))
-		}
-	}
-
-	return
+	return 1
 }

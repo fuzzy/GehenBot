@@ -30,86 +30,81 @@ import (
 	// Stdlib
 	"fmt"
 	// 3rd party
-	"github.com/husio/go-irc"
+	"github.com/aarzilli/golua/lua"
+	"github.com/thoj/go-ircevent"
 )
 
 /////////////////////
 // BotInstance Object
 /////////////////////
 
-type CallBack func(event IrcEvent) int
-
-type Plugin struct {
-	PluginType string
-	Callback   CallBack
+type Handler struct {
+	event    string
+	callback string
 }
 
 type BotInstance struct {
-	address  string        // irc server address
-	channels []string      // list of channels to join
-	nick     string        // bot nickname
-	name     string        // This is the client name (generally nick)
-	conn     irc.Client    // base connection type,
-	err      error         // error type, just use it everywhere.
-	evChan   chan IrcEvent // event channel.
-	plugins  []Plugin
+	address  string   // irc server address
+	channels []string // list of channels to join
+	nick     string   // bot nickname
+	name     string   // This is the client name (generally nick)
+	err      error    // error type, just use it everywhere.
+	lua      *lua.State
+	handlers []Handler
 }
 
 // BotInstance.Connect()
 
 func (b BotInstance) Connect() {
-	// If we have not been given an address error
-	if b.address != "" {
-		// if we don't have a nick, set the default
-		if b.nick == "" {
-			b.nick = "GehenBot"
-		}
-		// likewise with our name
-		if b.name == "" {
-			b.name = b.nick
-		}
+	conn := irc.IRC(b.nick, b.name)
 
-		// at this point, if we don't have a channel it isn't a showstopper
-		// but it doesn't make much sense either.
-		b.conn, b.err = irc.Connect(b.address)
-		Log(b.address)
-		if b.err != nil {
-			Fatal(fmt.Sprintf("Error in BotInstance.Connect()->Connect(): %s\n", b.err))
-		}
-	} else {
-		Fatal("Bot instance was misconfigured when Connect() was called.")
+	/* / verbosity handling
+	if cfg.Verbose {
+		conn.VerboseCallbackHandler = true
+	}
+	if cfg.Debug {
+		conn.Debug = true
+	}
+	*/
+
+	/******************************
+	** Embedded language support **
+	******************************/
+
+	// Initialize our lua interpreter
+	b.lua = lua.NewState()
+	defer b.lua.Close()
+	b.lua.OpenLibs()
+	// Register our exposed lua functions
+	b.lua.Register("register_handler", b.registerHandler)
+
+	Debug(fmt.Sprintf("## %d", len(b.handlers)))
+	b.lua.DoFile("/home/mike/Devel/go/gehenbot/plugins/greet.lua")
+	Debug(fmt.Sprintf("## %d", len(b.handlers)))
+
+	// connect to the server
+	err := conn.Connect(b.address)
+	if err != nil {
+		Fatal(err.Error())
 	}
 
-	// well we made it
-	b.Nick(b.nick)
-	b.User(b.name)
-
-	// now join our channels
-	for _, ch := range b.channels {
-		b.Join(ch)
-	}
-
-	// setup our lua integration
-	// L := b.InitLua()
-	// defer L.Close()
-
-	for {
-		message, err := b.conn.ReadMessage()
-		event := ParseEvent(message)
-
-		if err != nil {
-			Fatal(fmt.Sprintf("Error in BotInstance.Connect()->ReadMessage(): %s\n", err))
+	// and setup the join handler
+	conn.AddCallback("001", func(e *irc.Event) {
+		for _, channel := range b.channels {
+			conn.Join(channel)
 		}
+	})
 
-		if message.Command() == "PING" {
-			b.Pong(message.Trailing())
-		}
+	// set our generic event handler to be the callback for all the event
+	// types we give a rats ass about.
+	conn.AddCallback("PRIVMSG", b.EventHandler)
+	conn.AddCallback("JOIN", b.EventHandler)
+	conn.AddCallback("PART", b.EventHandler)
+	conn.AddCallback("KICK", b.EventHandler)
+	conn.AddCallback("MODE", b.EventHandler)
+	conn.AddCallback("QUIT", b.EventHandler)
 
-		if message.Command() == "PRIVMSG" {
-			Log(fmt.Sprintf("%s %s!%s %s %s %s\n", event.ircCommand, event.fromNick, event.fromHost, event.params, event.command, event.args))
-		}
-	}
-
+	conn.Loop()
 }
 
 func (b BotInstance) Connected() bool { return true }
