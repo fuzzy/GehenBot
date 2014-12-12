@@ -28,17 +28,33 @@ package main
 
 import (
 	// stdlib
-	// "fmt"
+	"fmt"
 	// 3rd party
 	"github.com/aarzilli/golua/lua"
 )
+
+// exported functions given to lua
 
 func (b *BotInstance) registerHandler(L *lua.State) int {
 	ev := L.ToString(1)
 	cb := L.ToString(2)
 	handler := Handler{event: ev, callback: cb}
 
+	Debug(fmt.Sprintf("%s : %s", ev, cb))
 	b.handlers = append(b.handlers, handler)
 
+	return 1
+}
+
+func (b *BotInstance) luaSay(L *lua.State) int {
+	tg := L.ToString(1)
+	tx := L.ToString(2)
+	b.conn.Privmsg(tg, tx)
+	return 1
+}
+
+func (b *BotInstance) luaJoin(L *lua.State) int {
+	ch := L.ToString(1)
+	b.conn.Join(ch)
 	return 1
 }
