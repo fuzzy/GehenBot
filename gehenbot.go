@@ -71,6 +71,7 @@ func main() {
 		bot := BotInstance{}
 		bot.address = b.Server
 		bot.channels = b.Channels
+		bot.scripts = b.Scripts
 		bot.nick = b.Nick
 		if b.User == "" {
 			bot.name = b.Nick
