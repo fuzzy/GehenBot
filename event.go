@@ -38,7 +38,7 @@ import (
 ** Event setter / getter **
 **************************/
 
-func (b BotInstance) EventHandler(e *irc.Event) {
+func (b *BotInstance) EventHandler(e *irc.Event) {
 	/*
 		Debug(e.Nick)
 		Debug(e.Message())
