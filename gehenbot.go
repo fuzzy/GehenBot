@@ -85,10 +85,6 @@ func main() {
 	}
 
 	for {
-		for _, b := range bots {
-			if b.Connected() {
-				time.Sleep(100000)
-			}
-		}
+		time.Sleep(100000)
 	}
 }
