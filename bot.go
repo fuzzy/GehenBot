@@ -81,14 +81,12 @@ func (b *BotInstance) Connect() {
 	// Register our exposed lua functions
 	b.lua.Register("register_handler", b.registerHandler)
 	b.lua.Register("privmsg", b.luaSay)
-	b.lua.Register("join", b.luaJoin)
+	b.lua.Register("join_channel", b.luaJoin)
+	b.lua.Register("part_channel", b.luaPart)
 
-	Debug(fmt.Sprintf("## %d", len(b.handlers)))
 	for _, ch := range b.scripts {
-		Debug(ch)
 		b.lua.DoFile(fmt.Sprintf("/home/mike/Devel/go/gehenbot/plugins/%s", ch))
 	}
-	Debug(fmt.Sprintf("## %d", len(b.handlers)))
 
 	// connect to the server
 	err := b.conn.Connect(b.address)
@@ -114,5 +112,3 @@ func (b *BotInstance) Connect() {
 
 	b.conn.Loop()
 }
-
-func (b BotInstance) Connected() bool { return true }

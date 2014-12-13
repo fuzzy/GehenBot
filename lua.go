@@ -28,7 +28,6 @@ package main
 
 import (
 	// stdlib
-	"fmt"
 	// 3rd party
 	"github.com/aarzilli/golua/lua"
 )
@@ -39,12 +38,11 @@ func (b *BotInstance) registerHandler(L *lua.State) int {
 	ev := L.ToString(1)
 	cb := L.ToString(2)
 	handler := Handler{event: ev, callback: cb}
-
-	Debug(fmt.Sprintf("%s : %s", ev, cb))
 	b.handlers = append(b.handlers, handler)
-
 	return 1
 }
+
+// actions
 
 func (b *BotInstance) luaSay(L *lua.State) int {
 	tg := L.ToString(1)
@@ -56,5 +54,11 @@ func (b *BotInstance) luaSay(L *lua.State) int {
 func (b *BotInstance) luaJoin(L *lua.State) int {
 	ch := L.ToString(1)
 	b.conn.Join(ch)
+	return 1
+}
+
+func (b *BotInstance) luaPart(L *lua.State) int {
+	ch := L.ToString(1)
+	b.conn.Part(ch)
 	return 1
 }
