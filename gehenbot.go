@@ -59,7 +59,7 @@ func main() {
 	var bots []BotInstance // this shouldn't really need a note
 
 	// get our config data
-	cfg = ReadConfig("./gehenbot.json")
+	cfg = ReadConfig("/home/mike/Devel/go/gehenbot/src/github.com/fuzzy/gehenbot/gehenbot.json")
 
 	// if we have been directed to daemonize, then we need to do so
 	if cfg.Daemonize {
