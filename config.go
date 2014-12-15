@@ -38,7 +38,6 @@ type Config struct {
 	Verbose     bool   `json:"verbose"`
 	Debug       bool   `json:"debug"`
 	CommandChar string `json:"command_char"`
-	CommandDir  string `json:"command_dir"`
 	PluginDir   string `json:"plugin_dir"`
 	Bots        []struct {
 		Channels []string `json:"channels"`
