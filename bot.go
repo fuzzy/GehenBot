@@ -73,19 +73,20 @@ func (b *BotInstance) Connect() {
 	** Embedded language support **
 	******************************/
 
+	/************************
+	** Setup lua scripting **
+	************************/
+
 	// Initialize our lua interpreter
 	b.lua = lua.NewState()
 	defer b.lua.Close()
 	b.lua.OpenLibs()
 
-	// Register our exposed lua functions
-	b.lua.Register("register_handler", b.registerHandler)
-	b.lua.Register("privmsg", b.luaSay)
-	b.lua.Register("join_channel", b.luaJoin)
-	b.lua.Register("part_channel", b.luaPart)
+	// setup the integration
+	b.initLua()
 
 	for _, ch := range b.scripts {
-		b.lua.DoFile(fmt.Sprintf("/home/mike/Devel/go/gehenbot/plugins/%s", ch))
+		b.lua.DoFile(fmt.Sprintf("%s/%s", cfg.PluginDir, ch))
 	}
 
 	// connect to the server

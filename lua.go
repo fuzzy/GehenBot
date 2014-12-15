@@ -32,6 +32,25 @@ import (
 	"github.com/aarzilli/golua/lua"
 )
 
+// init the lua environment
+
+func (b *BotInstance) initLua() {
+	langMap := map[string]lua.LuaGoFunction{
+		"register": b.registerHandler,
+		"say":      b.luaSay,
+		"join":     b.luaJoin,
+		"part":     b.luaPart,
+		"myname":   b.luaBotName,
+		"mynick":   b.luaBotNick,
+	}
+
+	// Register our exposed lua functions as member functions
+	for k, v := range langMap {
+		// TODO: need to figure out how to tell if an error happened here
+		b.lua.Register(k, v)
+	}
+}
+
 // exported functions given to lua
 
 func (b *BotInstance) registerHandler(L *lua.State) int {
@@ -39,6 +58,18 @@ func (b *BotInstance) registerHandler(L *lua.State) int {
 	cb := L.ToString(2)
 	handler := Handler{event: ev, callback: cb}
 	b.handlers = append(b.handlers, handler)
+	return 1
+}
+
+// information
+
+func (b *BotInstance) luaBotName(L *lua.State) int {
+	L.PushString(b.name)
+	return 1
+}
+
+func (b *BotInstance) luaBotNick(L *lua.State) int {
+	L.PushString(b.nick)
 	return 1
 }
 
