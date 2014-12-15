@@ -1,5 +1,5 @@
 
-register_handler("PRIVMSG", "joinChan")
+register("PRIVMSG", "joinChan")
 
 function joinChan(nick, event, target, args)
 	local haveCmd = 0
@@ -9,7 +9,7 @@ function joinChan(nick, event, target, args)
 				haveCmd = 1
 			end
 		elseif haveCmd == 1 then
-			join_channel(token)
+			join(token)
 			haveCmd = 2
 		end
 	end
