@@ -29,7 +29,6 @@ package main
 import (
 	// stdlib
 	"fmt"
-	// "strings"
 	// 3rd party
 	"github.com/thoj/go-ircevent"
 )
@@ -39,16 +38,6 @@ import (
 **************************/
 
 func (b *BotInstance) EventHandler(e *irc.Event) {
-	/*
-		Debug(e.Nick)
-		Debug(e.Message())
-		Debug(strings.Join(e.Arguments, " "))
-		Debug(e.Code)
-		Debug(e.Raw)
-		Debug("---------------------------------")
-		Debug(fmt.Sprintf("%d", len(b.handlers)))
-	*/
-
 	for _, h := range b.handlers {
 		if h.event == e.Code {
 			b.lua.DoString(fmt.Sprintf("%s('%s', '%s', '%s', '%s')", h.callback, e.Nick, e.Code, e.Arguments[0], e.Message()))
