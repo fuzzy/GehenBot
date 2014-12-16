@@ -40,7 +40,10 @@ import (
 func (b *BotInstance) EventHandler(e *irc.Event) {
 	for _, h := range b.handlers {
 		if h.event == e.Code {
-			b.lua.DoString(fmt.Sprintf("%s('%s', '%s', '%s', '%s')", h.callback, e.Nick, e.Code, e.Arguments[0], e.Message()))
+			err := b.lua.DoString(fmt.Sprintf("%s('%s', '%s', '%s', '%s')", h.callback, e.Nick, e.Code, e.Arguments[0], e.Message()))
+			if err != nil {
+				Debug(fmt.Sprintf("%v", err))
+			}
 		}
 	}
 
