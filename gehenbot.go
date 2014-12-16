@@ -79,12 +79,16 @@ func main() {
 			bot.name = b.User
 		}
 		// fire off the connection and event handlers
-		go bot.Connect()
-		// and push it onto the stack
 		bots = append(bots, bot)
+		go bot.Connect()
 	}
 
 	for {
-		time.Sleep(100000)
+		for _, b := range bots {
+			if !b.conn.Connected() {
+				go b.Connect()
+			}
+		}
+		time.Sleep(150000000)
 	}
 }
