@@ -36,12 +36,14 @@ import (
 
 func (b *BotInstance) initLua() {
 	langMap := map[string]lua.LuaGoFunction{
-		"register": b.registerHandler,
-		"say":      b.luaSay,
-		"join":     b.luaJoin,
-		"part":     b.luaPart,
-		"myname":   b.luaBotName,
-		"mynick":   b.luaBotNick,
+		"register":    b.registerHandler,
+		"say":         b.luaSay,
+		"join":        b.luaJoin,
+		"part":        b.luaPart,
+		"myname":      b.luaBotName,
+		"mynick":      b.luaBotNick,
+		"scriptDir":   b.luaPluginDir,
+		"commandChar": b.luaCommandChar,
 	}
 
 	// Register our exposed lua functions as member functions
@@ -62,6 +64,16 @@ func (b *BotInstance) registerHandler(L *lua.State) int {
 }
 
 // information
+
+func (b *BotInstance) luaPluginDir(L *lua.State) int {
+	L.PushString(cfg.PluginDir)
+	return 1
+}
+
+func (b *BotInstance) luaCommandChar(L *lua.State) int {
+	L.PushString(cfg.CommandChar)
+	return 1
+}
 
 func (b *BotInstance) luaBotName(L *lua.State) int {
 	L.PushString(b.name)
