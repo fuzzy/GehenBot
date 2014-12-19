@@ -29,9 +29,10 @@ package main
 import (
 	// Stdlib
 	"fmt"
+	"strconv"
+	"strings"
 	// 3rd party
 	"github.com/aarzilli/golua/lua"
-	"github.com/thoj/go-ircevent"
 )
 
 /////////////////////
@@ -52,22 +53,17 @@ type BotInstance struct {
 	err      error  // error type, just use it everywhere.
 	lua      *lua.State
 	handlers []Handler
-	conn     irc.Connection
+	conn     IrcClient
 }
 
 // BotInstance.Connect()
 
 func (b *BotInstance) Connect() {
-	b.conn = *irc.IRC(b.nick, b.name)
-
-	/* / verbosity handling
-	if cfg.Verbose {
-		conn.VerboseCallbackHandler = true
-	}
-	if cfg.Debug {
-		conn.Debug = true
-	}
-	*/
+	tmp := strings.Split(b.address, ":")
+	b.conn.Host = tmp[0]
+	b.conn.Port, _ = strconv.Atoi(tmp[1])
+	b.conn.Nick = b.nick
+	b.conn.Name = b.name
 
 	/******************************
 	** Embedded language support **
@@ -89,27 +85,21 @@ func (b *BotInstance) Connect() {
 		b.lua.DoFile(fmt.Sprintf("%s/%s", cfg.PluginDir, ch))
 	}
 
-	// connect to the server
-	err := b.conn.Connect(b.address)
-	if err != nil {
-		Fatal(err.Error())
-	}
-
 	// and setup the join handler
-	b.conn.AddCallback("001", func(e *irc.Event) {
+	b.conn.AddEventHandler("001", func(e *IrcMessage) {
 		for _, channel := range b.channels {
-			b.conn.Join(channel)
+			b.conn.SendRaw(fmt.Sprintf("JOIN %s", channel))
 		}
 	})
 
 	// set our generic event handler to be the callback for all the event
 	// types we give a rats ass about.
-	b.conn.AddCallback("PRIVMSG", b.EventHandler)
-	b.conn.AddCallback("JOIN", b.EventHandler)
-	b.conn.AddCallback("PART", b.EventHandler)
-	b.conn.AddCallback("KICK", b.EventHandler)
-	b.conn.AddCallback("MODE", b.EventHandler)
-	b.conn.AddCallback("QUIT", b.EventHandler)
+	b.conn.AddEventHandler("PRIVMSG", b.EventHandler)
+	b.conn.AddEventHandler("JOIN", b.EventHandler)
+	b.conn.AddEventHandler("PART", b.EventHandler)
+	b.conn.AddEventHandler("KICK", b.EventHandler)
+	b.conn.AddEventHandler("MODE", b.EventHandler)
+	b.conn.AddEventHandler("QUIT", b.EventHandler)
 
-	b.conn.Loop()
+	b.conn.Connect()
 }

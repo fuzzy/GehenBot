@@ -1,4 +1,5 @@
 /*
+
 Copyright (c) 2014, Mike 'Fuzzy' Partin <fuzzy@fumanchu.org>
 All rights reserved.
 
@@ -28,6 +29,7 @@ package main
 
 import (
 	// stdlib
+	"fmt"
 	// 3rd party
 	"github.com/aarzilli/golua/lua"
 )
@@ -90,18 +92,18 @@ func (b *BotInstance) luaBotNick(L *lua.State) int {
 func (b *BotInstance) luaSay(L *lua.State) int {
 	tg := L.ToString(1)
 	tx := L.ToString(2)
-	b.conn.Privmsg(tg, tx)
+	b.conn.SendRaw(fmt.Sprintf("PRIVMSG %s :%s", tg, tx))
 	return 1
 }
 
 func (b *BotInstance) luaJoin(L *lua.State) int {
 	ch := L.ToString(1)
-	b.conn.Join(ch)
+	b.conn.SendRaw(fmt.Sprintf("JOIN %s", ch))
 	return 1
 }
 
 func (b *BotInstance) luaPart(L *lua.State) int {
 	ch := L.ToString(1)
-	b.conn.Part(ch)
+	b.conn.SendRaw(fmt.Sprintf("PART %s", ch))
 	return 1
 }

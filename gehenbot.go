@@ -30,7 +30,6 @@ import (
 	// stdlib
 	"fmt"
 	"log"
-	"time"
 )
 
 var (
@@ -59,7 +58,7 @@ func main() {
 	var bots []BotInstance // this shouldn't really need a note
 
 	// get our config data
-	cfg = ReadConfig("/home/mike/Devel/go/gehenbot/src/github.com/fuzzy/gehenbot/gehenbot.json")
+	cfg = ReadConfig("/home/mike/Devel/go/src/github.com/fuzzy/gehenbot/gehenbot.json")
 
 	// if we have been directed to daemonize, then we need to do so
 	if cfg.Daemonize {
@@ -67,6 +66,7 @@ func main() {
 	}
 
 	// set our config data
+	idx := 1
 	for _, b := range cfg.Bots {
 		bot := BotInstance{}
 		bot.address = b.Server
@@ -80,15 +80,12 @@ func main() {
 		}
 		// fire off the connection and event handlers
 		bots = append(bots, bot)
-		go bot.Connect()
+		if len(cfg.Bots) == idx {
+			bot.Connect()
+		} else {
+			go bot.Connect()
+			idx += 1
+		}
 	}
 
-	for {
-		for _, b := range bots {
-			if !b.conn.Connected() {
-				go b.Connect()
-			}
-		}
-		time.Sleep(150000000)
-	}
 }
