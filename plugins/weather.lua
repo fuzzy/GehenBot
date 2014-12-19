@@ -39,10 +39,15 @@ function weather(nick, event, target, args)
 			haveCmd     = 2
 			uri         = uri .. "/" .. zipc .. ".json"
 			rd, e       = http.request(uri)
-			say(target, nick .. ": " .. parseWeather(rd))
+			if target ~= mynick() then
+				say(target, nick .. ": " .. parseWeather(rd))
+			else
+				say(nick, parseWeather(rd))
+			end
 		end
 	end
 	
 end
 
 register("PRIVMSG", "weather")
+
