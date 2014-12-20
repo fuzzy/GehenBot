@@ -27,12 +27,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package main
 
-import (
-	// stdlib
-	"fmt"
-	// 3rd party
-	"github.com/aarzilli/golua/lua"
-)
+import
+// stdlib
+
+// 3rd party
+"github.com/aarzilli/golua/lua"
 
 // init the lua environment
 
@@ -40,8 +39,13 @@ func (b *BotInstance) initLua() {
 	langMap := map[string]lua.LuaGoFunction{
 		"register":    b.registerHandler,
 		"say":         b.luaSay,
+		"action":      b.luaAction,
 		"join":        b.luaJoin,
 		"part":        b.luaPart,
+		"quit":        b.luaQuit,
+		"nick":        b.luaNick,
+		"whois":       b.luaWhois,
+		"mode":        b.luaMode,
 		"myname":      b.luaBotName,
 		"mynick":      b.luaBotNick,
 		"scriptDir":   b.luaPluginDir,
@@ -92,18 +96,49 @@ func (b *BotInstance) luaBotNick(L *lua.State) int {
 func (b *BotInstance) luaSay(L *lua.State) int {
 	tg := L.ToString(1)
 	tx := L.ToString(2)
-	b.conn.SendRaw(fmt.Sprintf("PRIVMSG %s :%s", tg, tx))
+	b.Say(tg, tx)
+	return 1
+}
+
+func (b *BotInstance) luaAction(L *lua.State) int {
+	tg := L.ToString(1)
+	mg := L.ToString(2)
+	b.Action(tg, mg)
 	return 1
 }
 
 func (b *BotInstance) luaJoin(L *lua.State) int {
 	ch := L.ToString(1)
-	b.conn.SendRaw(fmt.Sprintf("JOIN %s", ch))
+	b.Join(ch)
 	return 1
 }
 
 func (b *BotInstance) luaPart(L *lua.State) int {
 	ch := L.ToString(1)
-	b.conn.SendRaw(fmt.Sprintf("PART %s", ch))
+	b.Part(ch)
+	return 1
+}
+
+func (b *BotInstance) luaQuit(L *lua.State) int {
+	b.Quit()
+	return 1
+}
+
+func (b *BotInstance) luaNick(L *lua.State) int {
+	nk := L.ToString(1)
+	b.Nick(nk)
+	return 1
+}
+
+func (b *BotInstance) luaWhois(L *lua.State) int {
+	nk := L.ToString(1)
+	b.Whois(nk)
+	return 1
+}
+
+func (b *BotInstance) luaMode(L *lua.State) int {
+	tg := L.ToString(1)
+	md := L.ToString(2)
+	b.Mode(tg, md)
 	return 1
 }
