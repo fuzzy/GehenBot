@@ -1,16 +1,17 @@
 {
 		"daemonize": false,
-		"verbose": false,
+		"verbose": true,
 		"debug": true,
 		"command_char": "!",
-		"plugin_dir": "/home/mike/Devel/go/gehenbot/src/github.com/fuzzy/gehenbot/plugins",
+		"log_dir": "/home/mike/Devel/go/src/github.com/fuzzy/gehenbot/logs",
+		"plugin_dir": "/home/mike/Devel/go/src/github.com/fuzzy/gehenbot/plugins",
 		"bots": [
 				{
 						"nick": "GehenBoto",
 						"user": "GehenBoto",
 						"server": "irc.freenode.net:6667",
 						"channels": ["#fuzztest"],
-						"scripts": ["greet.lua", "part.lua", "join.lua"]
+						"scripts": ["weather.lua"]
 				}
 		]
 }
