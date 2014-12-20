@@ -1,27 +1,27 @@
 /*
-Copyright (c) 2014, Mike 'Fuzzy' Partin <fuzzy@fumanchu.org>
-All rights reserved.
+  Copyright (c) 2014, Mike 'Fuzzy' Partin <fuzzy@fumanchu.org>
+  All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
 
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
 
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 package main
@@ -102,4 +102,40 @@ func (b *BotInstance) Connect() {
 	b.conn.AddEventHandler("QUIT", b.EventHandler)
 
 	b.conn.Connect()
+}
+
+/*******************
+** Public methods **
+*******************/
+
+func (b *BotInstance) Say(target string, message string) {
+	b.conn.SendRaw(fmt.Sprintf("PRIVMSG %s :%s", target, message))
+}
+
+func (b *BotInstance) Action(target string, message string) {
+	b.conn.SendRaw(fmt.Sprintf("PRIVMSG %s :\001ACTION %s\001", target, message))
+}
+
+func (b *BotInstance) Join(target string) {
+	b.conn.SendRaw(fmt.Sprintf("JOIN %s", target))
+}
+
+func (b *BotInstance) Part(target string) {
+	b.conn.SendRaw(fmt.Sprintf("PART %s", target))
+}
+
+func (b *BotInstance) Quit() {
+	b.conn.SendRaw("QUIT")
+}
+
+func (b *BotInstance) Nick(nick string) {
+	b.conn.SendRaw(fmt.Sprintf("NICK %s", nick))
+}
+
+func (b *BotInstance) Whois(nick string) {
+	b.conn.SendRaw(fmt.Sprintf("WHOIS %s", nick))
+}
+
+func (b *BotInstance) Mode(target string, mode string) {
+	b.conn.SendRaw(fmt.Sprintf("MODE %s %s", target, mode))
 }
