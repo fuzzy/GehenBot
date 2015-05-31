@@ -81,12 +81,6 @@ func (b *BotInstance) Connect() {
 	// setup the integration
 	b.initLua()
 
-	/***************************
-	** Setup python scripting **
-	***************************/
-
-	b.initPython()
-
 	for _, ch := range b.scripts {
 		// TODO:
 		// This neds to take into account that we now have plugins
