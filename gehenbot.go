@@ -42,6 +42,7 @@ var (
 func Log(line string) {
 	if cfg.Verbose {
 		log.Println(fmt.Sprintf("INFO: %s", line))
+		fmt.Println(fmt.Sprintf("\033[1;32mINFO\033[0m: %s", line))
 	}
 }
 
@@ -62,7 +63,7 @@ func main() {
 	var bots []BotInstance // this shouldn't really need a note
 
 	// get our config data
-	cfg = ReadConfig("/home/mike/Devel/go/src/github.com/fuzzy/gehenbot/gehenbot.json")
+	cfg = ReadConfig("./gehenbot.json")
 
 	// if we have been directed to daemonize, then we need to do so
 	if cfg.Daemonize {

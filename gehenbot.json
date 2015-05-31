@@ -3,14 +3,14 @@
 		"verbose": true,
 		"debug": true,
 		"command_char": "!",
-		"log_dir": "/home/mike/Devel/go/src/github.com/fuzzy/gehenbot/logs",
-		"plugin_dir": "/home/mike/Devel/go/src/github.com/fuzzy/gehenbot/plugins",
+		"log_dir": "./logs",
+		"plugin_dir": "./plugins",
 		"bots": [
 				{
-						"nick": "GehenBoto",
-						"user": "GehenBoto",
+						"nick": "Goatly",
+						"user": "Goatly",
 						"server": "irc.freenode.net:6667",
-						"channels": ["#fuzztest"],
+						"channels": ["#goat-dev"],
 						"scripts": ["weather.lua"]
 				}
 		]
