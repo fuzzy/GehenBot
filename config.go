@@ -31,22 +31,29 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
+	// 3rd party
+	"github.com/go-yaml/yaml"
 )
 
 type Config struct {
-	Daemonize   bool   `json:"daemonize"`
-	Verbose     bool   `json:"verbose"`
-	Debug       bool   `json:"debug"`
-	LogDir      string `json:"log_dir"`
-	CommandChar string `json:"command_char"`
-	PluginDir   string `json:"plugin_dir"`
-	Bots        []struct {
-		Channels []string `json:"channels"`
-		Nick     string   `json:"nick"`
-		Scripts  []string `json:"scripts"`
-		Server   string   `json:"server"`
-		User     string   `json:"user"`
-	} `json:"bots"`
+	Daemonize bool   `json:"daemonize" yaml:"daemonize"`
+	Verbose   bool   `json:"verbose" yaml:"verbose"`
+	Debug     bool   `json:"debug" yaml:"debug"`
+	LogDir    string `json:"log_dir" yaml:"log_dir"`
+	PluginDir string `json:"plugin_dir" yaml:"plugin_dir"`
+	Networks  []struct {
+		Name        string   `json:"name" yaml:"name"`
+		CommandChar string   `json:"command_char" yaml:"command_char"`
+		Channels    []string `json:"channels" yaml:"channels"`
+		Nick        string   `json:"nick" yaml:"nick"`
+		Scripts     []string `json:"scripts" yaml:"scripts"`
+		Server      string   `json:"server" yaml:"server"`
+		Port        int      `json:"port" yaml:"port"`
+		User        string   `json:"user" yaml:"user"`
+		Ssl         bool     `json:"ssl" yaml:"ssl"`
+		SslVerify   bool     `json:"ssl_verify" yaml:"ssl_verify"`
+	} `json:"networks"`
 }
 
 func ReadConfig(jsonCfg string) Config {
@@ -57,7 +64,12 @@ func ReadConfig(jsonCfg string) Config {
 		Fatal(fmt.Sprintf("Error in io.ReadFile(): %s\n", err))
 	}
 
-	err = json.Unmarshal([]byte(cfgData), &cfg)
+	if jsonCfg[len(jsonCfg)-4:] == ".yml" || jsonCfg[len(jsonCfg)-4:] == "yaml" {
+		err = yaml.Unmarshal(cfgData, &cfg)
+	} else if jsonCfg[len(jsonCfg)-4:] == ".jsn" || jsonCfg[len(jsonCfg)-4:] == "json" {
+		err = json.Unmarshal([]byte(cfgData), &cfg)
+	}
+
 	if err != nil {
 		Fatal(fmt.Sprintf("Error in ReadConfig(): %s\n", err))
 	}

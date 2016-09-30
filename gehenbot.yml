@@ -1,0 +1,34 @@
+---
+daemonize: false
+verbose: true
+debug: true
+root_dir: "/home/fuzzy/wd/GehenBot/"
+log_dir: "logs/c0d0p0s0/"
+plugin_dir: "plugins/"
+networks:
+  - name: "c0d0p0s0"
+    command_char: "."
+    nick: "trb"
+    user: "trb"
+    server: "saltshaker.c0d0p0s0.net"
+    port: 6697
+    ssl: true
+    ssl_verify: false
+    channels:
+      - "#disrupted"
+      - "#goat-dev"
+    scripts:
+      - "weather"
+  - name: "freenode"
+    command_char: "."
+    nick: "trb"
+    user: "trb"
+    server: "irc.freenode.net"
+    port: 6697
+    ssl: true
+    ssl_verify: false
+    channels:
+      - "#disrupted"
+      - "#goat-dev"
+    scripts:
+      - "weather"
