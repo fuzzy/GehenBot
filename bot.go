@@ -29,8 +29,6 @@ package main
 import (
 	// Stdlib
 	"fmt"
-	"strconv"
-	"strings"
 	// 3rd party
 	"github.com/aarzilli/golua/lua"
 )
@@ -45,7 +43,8 @@ type Handler struct {
 }
 
 type BotInstance struct {
-	address  string   // irc server address
+	address  string // irc server address
+	port     int
 	channels []string // list of channels to join
 	scripts  []string
 	nick     string // bot nickname
@@ -54,14 +53,14 @@ type BotInstance struct {
 	lua      *lua.State
 	handlers []Handler
 	conn     IrcClient
+	cmdchar  string // command character
 }
 
 // BotInstance.Connect()
 
 func (b *BotInstance) Connect() {
-	tmp := strings.Split(b.address, ":")
-	b.conn.Host = tmp[0]
-	b.conn.Port, _ = strconv.Atoi(tmp[1])
+	b.conn.Host = b.address
+	b.conn.Port = b.port
 	b.conn.Nick = b.nick
 	b.conn.Name = b.name
 

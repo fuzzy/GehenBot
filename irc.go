@@ -29,6 +29,7 @@ package main
 import (
 	// stdlib
 	"bufio"
+	"crypto/tls"
 	"fmt"
 	"net"
 	"os"
@@ -55,6 +56,10 @@ type IrcClient struct {
 	Name      string
 	Input     chan string
 	Socket    net.Conn
+	Ssl       bool
+	SslSock   *tls.Conn
+	SslConfig *tls.Config
+	SslVerify bool
 	callbacks []IrcCallback
 	error
 }
@@ -78,6 +83,21 @@ func (i *IrcClient) Connect() {
 	}
 
 	i.Socket, i.error = net.Dial("tcp", fmt.Sprintf("%s:%d", i.Host, i.Port))
+	if i.error != nil {
+		Fatal(i.error.Error())
+	}
+
+	if i.Ssl {
+		if i.SslVerify {
+			i.SslConfig = &tls.Config{ServerName: i.Host}
+		} else {
+			i.SslConfig = &tls.Config{ServerName: i.Host, InsecureSkipVerify: i.SslVerify}
+		}
+		i.SslSock = tls.Client(i.Socket, i.SslConfig)
+		if i.error = i.SslSock.Handshake(); i.error != nil {
+			Fatal(i.error.Error())
+		}
+	}
 
 	if i.error != nil {
 		fmt.Printf("ERROR: %s\n", i.error)

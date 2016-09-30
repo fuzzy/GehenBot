@@ -63,7 +63,7 @@ func main() {
 	var bots []BotInstance // this shouldn't really need a note
 
 	// get our config data
-	cfg = ReadConfig("./gehenbot.json")
+	cfg = ReadConfig(os.Args[1])
 
 	// if we have been directed to daemonize, then we need to do so
 	if cfg.Daemonize {
@@ -80,20 +80,22 @@ func main() {
 
 	// set our config data
 	idx := 1
-	for _, b := range cfg.Bots {
+	for _, b := range cfg.Networks {
 		bot := BotInstance{}
 		bot.address = b.Server
 		bot.channels = b.Channels
 		bot.scripts = b.Scripts
 		bot.nick = b.Nick
+		bot.port = b.Port
 		if b.User == "" {
 			bot.name = b.Nick
 		} else {
 			bot.name = b.User
 		}
+		bot.cmdchar = b.CommandChar
 		// fire off the connection and event handlers
 		bots = append(bots, bot)
-		if len(cfg.Bots) == idx {
+		if len(cfg.Networks) == idx {
 			bot.Connect()
 		} else {
 			go bot.Connect()

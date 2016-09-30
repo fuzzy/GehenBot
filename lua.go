@@ -77,7 +77,7 @@ func (b *BotInstance) luaPluginDir(L *lua.State) int {
 }
 
 func (b *BotInstance) luaCommandChar(L *lua.State) int {
-	L.PushString(cfg.CommandChar)
+	L.PushString(b.cmdchar)
 	return 1
 }
 
