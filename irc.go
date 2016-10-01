@@ -84,17 +84,23 @@ func (i *IrcClient) Connect() {
 
 	i.Socket, i.error = net.Dial("tcp", fmt.Sprintf("%s:%d", i.Host, i.Port))
 	if i.error != nil {
+		fmt.Println(i.error.Error())
 		Fatal(i.error.Error())
 	}
 
+	fmt.Println("test")
 	if i.Ssl {
+		fmt.Println("ssl shit started")
 		if i.SslVerify {
+			fmt.Printf("verifying the ssl shit")
 			i.SslConfig = &tls.Config{ServerName: i.Host}
 		} else {
-			i.SslConfig = &tls.Config{ServerName: i.Host, InsecureSkipVerify: i.SslVerify}
+			fmt.Println("not verifying the ssl shit")
+			i.SslConfig = &tls.Config{ServerName: i.Host, InsecureSkipVerify: true}
 		}
 		i.SslSock = tls.Client(i.Socket, i.SslConfig)
 		if i.error = i.SslSock.Handshake(); i.error != nil {
+			fmt.Println(i.error.Error())
 			Fatal(i.error.Error())
 		}
 	}
@@ -108,18 +114,28 @@ func (i *IrcClient) Connect() {
 
 		i.AddEventHandler("PING", func(e *IrcMessage) { i.SendRaw(fmt.Sprintf("PONG %d", time.Now().UnixNano())) })
 
-		buffer := bufio.NewReader(i.Socket)
+		var buffer *bufio.Reader
+		if !i.Ssl {
+			buffer = bufio.NewReader(i.Socket)
+		} else if i.Ssl {
+			buffer = bufio.NewReader(i.SslSock)
+		}
+
 		for {
 
-			if i.Socket != nil {
+			if !i.Ssl {
 				i.Socket.SetReadDeadline(time.Now().Add(58 + (15 * time.Minute)))
+			} else if i.Ssl {
+				i.SslSock.SetReadDeadline(time.Now().Add(58 + (15 * time.Minute)))
 			}
 
 			str, err := buffer.ReadString('\n')
-
-			if i.Socket != nil {
-				var zero time.Time
+			fmt.Println(str)
+			var zero time.Time
+			if !i.Ssl {
 				i.Socket.SetReadDeadline(zero)
+			} else if i.Ssl {
+				i.SslSock.SetReadDeadline(zero)
 			}
 
 			if len(str) > 0 {
@@ -141,18 +157,20 @@ func (i *IrcClient) Connect() {
 				} else {
 					event.Args = strings.Split(" ", " ")
 				}
-
+				fmt.Println("before")
+				fmt.Println(str)
 				if strings.Contains(strings.TrimRight(str, "\n"), "*** Found your hostname") {
+					fmt.Println("during")
 					i.SendRaw(fmt.Sprintf("NICK %s", i.Nick))
 					i.SendRaw(fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s", i.Nick, i.Nick))
 				}
-
+				fmt.Println("after")
 				// Now let the event handler do it's work
 				i.eventHandler(event)
 
 			}
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println(err.Error())
 				break
 			}
 		}
@@ -191,17 +209,26 @@ func (i *IrcClient) pingLoop() {
 func (i *IrcClient) writeLoop() {
 	for {
 		b, ok := <-i.Input
-		if !ok || b == "" || i.Socket == nil {
+		if !ok || b == "" || i.Socket == nil || i.SslSock == nil {
 			return
 		} else {
-			i.Socket.SetWriteDeadline(time.Now().Add(1 * time.Minute))
-			_, err := i.Socket.Write([]byte(b))
-			if err != nil {
-				fmt.Printf("ERROR: %s\n", err)
-				return
+			if i.Socket != nil && !i.Ssl {
+				i.Socket.SetWriteDeadline(time.Now().Add(1 * time.Minute))
+				_, err := i.Socket.Write([]byte(b))
+				if err != nil {
+					fmt.Printf("ERROR: %s\n", err.Error())
+					return
+				}
+				var zero time.Time
+				i.Socket.SetWriteDeadline(zero)
+			} else if i.SslSock != nil && i.Ssl {
+				i.SslSock.SetWriteDeadline(time.Now().Add(1 * time.Minute))
+				_, err := i.SslSock.Write([]byte(b))
+				if err != nil {
+					fmt.Printf("ERROR: %s\n", err.Error())
+					return
+				}
 			}
-			var zero time.Time
-			i.Socket.SetWriteDeadline(zero)
 		}
 	}
 }

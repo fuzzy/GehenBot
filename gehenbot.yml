@@ -11,24 +11,12 @@ networks:
     nick: "trb2"
     user: "trb2"
     server: "saltshaker.c0d0p0s0.net"
-    port: 6667
-    ssl: false
+    port: 6697
+    ssl: true
     ssl_verify: false
     channels:
       - "#disrupted"
       - "#goat-dev"
     scripts:
       - "weather"
-  - name: "freenode"
-    command_char: "."
-    nick: "trb2"
-    user: "trb2"
-    server: "irc.freenode.net"
-    port: 6667
-    ssl: false
-    ssl_verify: false
-    channels:
-      - "#disrupted"
-      - "#goat-dev"
-    scripts:
-      - "weather"
+

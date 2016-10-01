@@ -43,17 +43,19 @@ type Handler struct {
 }
 
 type BotInstance struct {
-	address  string // irc server address
-	port     int
-	channels []string // list of channels to join
-	scripts  []string
-	nick     string // bot nickname
-	name     string // This is the client name (generally nick)
-	err      error  // error type, just use it everywhere.
-	lua      *lua.State
-	handlers []Handler
-	conn     IrcClient
-	cmdchar  string // command character
+	address    string // irc server address
+	port       int
+	channels   []string // list of channels to join
+	scripts    []string
+	nick       string // bot nickname
+	name       string // This is the client name (generally nick)
+	err        error  // error type, just use it everywhere.
+	lua        *lua.State
+	handlers   []Handler
+	conn       IrcClient
+	cmdchar    string // command character
+	ssl        bool
+	ssl_verify bool
 }
 
 // BotInstance.Connect()
@@ -63,6 +65,8 @@ func (b *BotInstance) Connect() {
 	b.conn.Port = b.port
 	b.conn.Nick = b.nick
 	b.conn.Name = b.name
+	b.conn.Ssl = b.ssl
+	b.conn.SslVerify = b.ssl_verify
 
 	/******************************
 	** Embedded language support **

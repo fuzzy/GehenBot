@@ -87,6 +87,8 @@ func main() {
 		bot.scripts = b.Scripts
 		bot.nick = b.Nick
 		bot.port = b.Port
+		bot.ssl = b.Ssl
+		bot.ssl_verify = b.SslVerify
 		if b.User == "" {
 			bot.name = b.Nick
 		} else {
@@ -98,7 +100,7 @@ func main() {
 		if len(cfg.Networks) == idx {
 			bot.Connect()
 		} else {
-			go bot.Connect()
+			bot.Connect()
 			idx += 1
 		}
 	}
